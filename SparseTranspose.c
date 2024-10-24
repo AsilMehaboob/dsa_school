@@ -1,71 +1,46 @@
 #include<stdio.h>
 
-void transpose(int sparse[][3],int t,int result[][3])
+void transpose(int a[][3])
 {
-    result[0][0]=sparse[0][1];
-    result[0][1]=sparse[0][0];
-    result[0][2]=sparse[0][2];
-    int k=1;
-    for(int i=0;i<sparse[0][0];i++)
+    int i,j,k=1;
+    int b[100][3];
+
+    b[0][0]=a[0][1];
+    b[0][1]=a[0][0];
+    b[0][2]=a[0][2];
+
+    for(i=0;i<a[0][1];i++)
     {
-        for(int j=1;j<=t;j++)
+        for(j=0;j<a[0][2];j++)
         {
-            if(sparse[j][1]==i)
+            if(a[j][1]==i)
             {
-                result[k][0]=sparse[j][1];
-                result[k][1]=sparse[j][0];
-                result[k][2]=sparse[j][2];
+                b[k][0]=a[j][1];
+                b[k][1]=a[j][0];
+                b[k][2]=a[j][2];
                 k++;
             }
         }
     }
-}
-
-void display(int sparse[][3],int k)
-{
-    printf("Sparse Representation:\n");
-    for(int i=0;i<k;i++)
+// Display the transposed matrix
+    printf("Transposed matrix in sparse format:\n");
+    for(i = 0; i <= b[0][2]; i++)
     {
-        printf("%d%d%d\n",sparse[i][0],sparse[i][1],sparse[i][2]);
+        printf("%d %d %d\n", b[i][0], b[i][1], b[i][2]);
     }
 }
 
-
-int create(int sparse[][3],int r,int c)
+int main()
 {
-    int val;
-    int k=1;
-    for(int i=0;i<r;i++)
-    {
-        for(int j=0;j<c;j++)
-        {
-            printf("Enter value at (%d,%d):",i,j);
-            scanf("%d",&val);
-            if(val!=0)
-            {
-                sparse[k][0]=i;
-                sparse[k][1]=j;
-                sparse[k][2]=val;
-                k++;
-            }
-        }
-    }
-    return k;
-}
+    // Example sparse matrix: first row contains [rows, cols, non-zero elements]
+    int a[4][3] = {
+        {3, 3, 3},  // 3 rows, 3 columns, 3 non-zero elements
+        {0, 1, 5},  // Non-zero element at (0,1) with value 5
+        {1, 2, 8},  // Non-zero element at (1,2) with value 8
+        {2, 0, 9}   // Non-zero element at (2,0) with value 9
+    };
 
+    transpose(a);
 
-void main()
-{
-    int r,c,sparse[100][3],result[100][3],size;
-
-    printf("Enter rows and cols:");
-    scanf("%d%d",&r,&c);
-    sparse[0][0]=r;
-    sparse[0][1]=c;
-    size=create(sparse,r,c);
-    sparse[0][2]=size-1;
-    display(sparse,size);
-    transpose(sparse,size,result);
-    printf("Transpose:\n");
-    display(result,size);
+    return 0;
 }
