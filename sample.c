@@ -1,119 +1,118 @@
 #include <stdio.h>
 
-int create(int m, int n, int T[][3]) {
-    int k = 1, e;
-    T[0][0] = m;
-    T[0][1] = n;
-    for (int i = 0; i < m; i++) {
-        for (int j = 0; j < n; j++) {
-            scanf("%d", &e);
-            if (e != 0) {
-                T[k][0] = i;
-                T[k][1] = j;
-                T[k][2] = e;
+int create(int sparse[][3], int r, int c) {
+    int val;
+    int k = 1;
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            printf("Enter value at (%d,%d):", i, j);
+            scanf("%d", &val);
+            if (val != 0) {
+                sparse[k][0] = i;
+                sparse[k][1] = j;
+                sparse[k][2] = val;
                 k++;
             }
         }
     }
-    T[0][2] = k;  // Store the number of non-zero elements
+    sparse[0][0] = r;
+    sparse[0][1] = c;
+    sparse[0][2] = k - 1;
     return k;
 }
 
-void display(int k, int T[][3]) {
-    for (int i = 0; i < k; i++) 
-        printf("%d\t%d\t%d\n", T[i][0], T[i][1], T[i][2]);
+int add(int sparse1[][3], int sparse2[][3], int t1, int t2, int sparse3[][3]) {
+    int i = 1, j = 1, k = 1;
+    sparse3[0][0] = sparse1[0][0];
+    sparse3[0][1] = sparse1[0][1];
+    sparse3[0][2] = 0;
     
-}
-
-int add(int m, int n, int k1, int k2, int T1[][3], int T2[][3], int T3[][3]) {
-    int i = 1, j = 1, k = 1;  // Start indices from 1
-    T3[0][0] = m;
-    T3[0][1] = n;
-
-    while (i < k1 && j < k2) {
-        if (T1[i][0] == T2[j][0]) {
-            if (T1[i][1] == T2[j][1]) {
-                T3[k][0] = T1[i][0];
-                T3[k][1] = T1[i][1];
-                T3[k][2] = T1[i][2] + T2[j][2];
+    while (i < t1 && j < t2) {
+        if (sparse1[i][0] == sparse2[j][0]) {
+            if (sparse1[i][1] == sparse2[j][1]) {
+                sparse3[k][0] = sparse1[i][0];
+                sparse3[k][1] = sparse1[i][1];
+                sparse3[k][2] = sparse1[i][2] + sparse2[j][2];
+                k++;
                 i++;
                 j++;
-            } else if (T1[i][1] < T2[j][1]) {
-                T3[k][0] = T1[i][0];
-                T3[k][1] = T1[i][1];
-                T3[k][2] = T1[i][2];
+            } else if (sparse1[i][1] < sparse2[j][1]) {
+                sparse3[k][0] = sparse1[i][0];
+                sparse3[k][1] = sparse1[i][1];
+                sparse3[k][2] = sparse1[i][2];
+                k++;
                 i++;
             } else {
-                T3[k][0] = T2[j][0];
-                T3[k][1] = T2[j][1];
-                T3[k][2] = T2[j][2];
+                sparse3[k][0] = sparse2[j][0];
+                sparse3[k][1] = sparse2[j][1];
+                sparse3[k][2] = sparse2[j][2];
+                k++;
                 j++;
             }
+        } else if (sparse1[i][0] < sparse2[j][0]) {
+            sparse3[k][0] = sparse1[i][0];
+            sparse3[k][1] = sparse1[i][1];
+            sparse3[k][2] = sparse1[i][2];
             k++;
-        } else if (T1[i][0] < T2[j][0]) {
-            T3[k][0] = T1[i][0];
-            T3[k][1] = T1[i][1];
-            T3[k][2] = T1[i][2];
             i++;
-            k++;
         } else {
-            T3[k][0] = T2[j][0];
-            T3[k][1] = T2[j][1];
-            T3[k][2] = T2[j][2];
-            j++;
+            sparse3[k][0] = sparse2[j][0];
+            sparse3[k][1] = sparse2[j][1];
+            sparse3[k][2] = sparse2[j][2];
             k++;
+            j++;
         }
     }
-
-    while (i < k1) {
-        T3[k][0] = T1[i][0];
-        T3[k][1] = T1[i][1];
-        T3[k][2] = T1[i][2];
+    while (i < t1) {
+        sparse3[k][0] = sparse1[i][0];
+        sparse3[k][1] = sparse1[i][1];
+        sparse3[k][2] = sparse1[i][2];
+        k++;
         i++;
-        k++;
     }
-
-    while (j < k2) {
-        T3[k][0] = T2[j][0];
-        T3[k][1] = T2[j][1];
-        T3[k][2] = T2[j][2];
+    while (j < t2) {
+        sparse3[k][0] = sparse2[j][0];
+        sparse3[k][1] = sparse2[j][1];
+        sparse3[k][2] = sparse2[j][2];
+        k++;
         j++;
-        k++;
     }
-
-    T3[0][2] = k;  // Store the number of non-zero elements in the result
+    sparse3[0][2] = k - 1;
     return k;
+}
+
+void display(int sparse[][3]) {
+    int totalElements = sparse[0][2];
+    printf("Row\tColumn\tValue\n");
+    for (int i = 0; i <= totalElements; i++) {
+        printf("%d\t%d\t%d\n", sparse[i][0], sparse[i][1], sparse[i][2]);
+    }
 }
 
 int main() {
-    int rows1, cols1, rows2, cols2, k1, k2, k3;
-    int T1[50][3], T2[50][3], T3[50][3];
-
-    printf("Enter the number of rows and columns of the first matrix (rows cols): ");
-    scanf("%d %d", &rows1, &cols1);
-
-    printf("Enter the number of rows and columns of the second matrix (rows cols): ");
-    scanf("%d %d", &rows2, &cols2);
-
-    if (rows1 != rows2 || cols1 != cols2) {
-        printf("Matrix addition is not possible.\n");
-        return 0;
+    int r1, c1, r2, c2;
+    printf("Enter rows and columns for first matrix: ");
+    scanf("%d %d", &r1, &c1);
+    int sparse1[100][3];
+    int t1 = create(sparse1, r1, c1);
+    display(sparse1);
+    
+    printf("Enter rows and columns for second matrix: ");
+    scanf("%d %d", &r2, &c2);
+    int sparse2[100][3];
+    int t2 = create(sparse2, r2, c2);
+    display(sparse2);
+    
+    if (r1 != r2 || c1 != c2) {
+        printf("Matrices cannot be added due to mismatched dimensions.\n");
+        return 1;
     }
-
-    printf("Enter Matrix 1: \n");
-    k1 = create(rows1, cols1, T1);
-    printf("Matrix 1:\n");
-    display(k1, T1);
-
-    printf("Enter Matrix 2: \n");
-    k2 = create(rows2, cols2, T2);
-    printf("Matrix 2:\n");
-    display(k2, T2);
-
-    printf("ADD: \n");
-    k3 = add(rows1, cols1, k1, k2, T1, T2, T3);
-    printf("Result:\n");
-    display(k3, T3);
-
+    
+    int sparse3[100][3];
+    int t3 = add(sparse1, sparse2, t1, t2, sparse3);
+    
+    printf("Resultant Sparse Matrix:\n");
+    display(sparse3);
+    
     return 0;
 }
