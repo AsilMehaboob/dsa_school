@@ -38,17 +38,19 @@ void dequeue()
     }
 }
 
-void display()
-{
-    if(front==-1&&rear==-1)
-        printf("Empty");
-    else    
-    {
-        for(int i=front;i!rear;i=(i+1)%n)
-            printf("%d",queue[i]);
+void display() {
+    if(front == -1 && rear == -1) {
+        printf("Queue is Empty\n");
+    } 
+    else {
+        printf("Queue elements: ");
+        for(int i = front; i != rear; i = (i + 1) % n) {
+            printf("%d ", queue[i]);
+        }
+        printf("%d\n", queue[rear]);  // Print the last element (rear)
     }
-    printf("%d",queue[rear])
 }
+
 
 void main()
 {
